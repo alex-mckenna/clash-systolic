@@ -1,0 +1,9 @@
+packages:
+  clash-systolic.cabal
+
+package clash-prelude
+  flags: -large-tuples
+
+package clash-systolic
+  documentation: True
+

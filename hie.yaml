@@ -1,0 +1,17 @@
+cradle:
+  cabal:
+    - path: "src"
+      component: "lib:clash-systolic"
+
+    - path: "tests"
+      component: "clash-systolic:test:doctest"
+
+    - path: "tests"
+      component: "clash-systolic:test:test-library"
+
+    - path: "./bin/Clash.hs"
+      component: "clash-systolic:exe:clash"
+
+    - path: "./bin/Clashi.hs"
+      component: "clash-systolic:exe:clashi"
+

@@ -1,0 +1,139 @@
+cabal-version: 2.4
+
+name: clash-systolic
+version: 0.1.0
+license: BSD-3-Clause
+author: Alex McKenna <alex@qbaylogic.com>
+maintainer: Alex McKenna <alex@qbaylogic.com>
+
+common common-options
+  default-language: Haskell2010
+
+  default-extensions:
+    BangPatterns
+    ConstraintKinds
+    DataKinds
+    DeriveFoldable
+    DeriveFunctor
+    DeriveGeneric
+    DeriveTraversable
+    DerivingStrategies
+    FlexibleContexts
+    FlexibleInstances
+    GADTs
+    LambdaCase
+    NoStarIsType
+    ScopedTypeVariables
+    StandaloneDeriving
+    TypeApplications
+    TypeFamilyDependencies
+    TypeOperators
+
+    NoImplicitPrelude
+
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Werror
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+
+    -- Plugins to support type-level constraint solving on naturals
+    -fplugin GHC.TypeLits.Extra.Solver
+    -fplugin GHC.TypeLits.Normalise
+    -fplugin GHC.TypeLits.KnownNat.Solver
+
+    -- Clash needs access to the source code in compiled modules
+    -fexpose-all-unfoldings
+
+    -- Worker wrappers introduce unstable names for functions that might have
+    -- blackboxes attached for them. You can disable this, but be sure to add
+    -- a no-specialize pragma to every function with a blackbox.
+    -fno-worker-wrapper
+
+  if impl(ghc >= 8.2)
+    ghc-options:
+      -fhide-source-paths
+
+  if impl(ghc >= 8.4)
+    ghc-options:
+      -Wmissing-export-lists
+      -Wpartial-fields
+
+  build-depends:
+    base,
+    clash-prelude >= 1.2 && <2,
+    ghc-typelits-extra,
+    ghc-typelits-knownnat,
+    ghc-typelits-natnormalise,
+
+custom-setup
+  setup-depends:
+    base,
+    Cabal,
+    cabal-doctest,
+
+library
+  import: common-options
+  hs-source-dirs: src
+
+  exposed-modules:
+    Clash.Systolic
+    Clash.Systolic.Cell
+    Clash.Systolic.Network
+    Clash.Systolic.Network.Pipeline
+    Clash.Systolic.Network.Rectangle
+
+  build-depends:
+    profunctors,
+
+test-suite doctest
+  import: common-options
+  hs-source-dirs: tests
+  type: exitcode-stdio-1.0
+  main-is: Doctest.hs
+
+  build-depends:
+    doctest,
+    process,
+
+    clash-systolic,
+
+test-suite test-library
+  import: common-options
+  hs-source-dirs: tests
+  type: exitcode-stdio-1.0
+  main-is: TestLibrary.hs
+
+  build-depends:
+    hedgehog,
+    tasty,
+    tasty-hedgehog,
+
+    clash-systolic,
+
+-- Builds the executable 'clash', with simple project in scope
+executable clash
+  default-language: Haskell2010
+  main-is: bin/Clash.hs
+
+  build-Depends:
+    base,
+    clash-ghc,
+
+    clash-systolic,
+
+-- Builds the executable 'clashi', with simple project in scope
+executable clashi
+  default-language: Haskell2010
+  main-is: bin/Clashi.hs
+  if !os(Windows)
+    ghc-options: -dynamic
+
+  build-depends:
+    base,
+    clash-ghc,
+
+    clash-systolic,
+
