@@ -6,4 +6,5 @@ package clash-prelude
 
 package clash-systolic
   documentation: True
+  tests: True
 

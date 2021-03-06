@@ -103,8 +103,8 @@ delayOutputs d =
   bimap reverse reverse . delayInputs d . bimap reverse reverse
 
 instance SystolicNetwork (Rect cell n m a b) where
-  type NetworkInput  (Rect _ n m a b) = (Vec n a, Vec m b)
-  type NetworkOutput (Rect _ n m a b) = (Vec n a, Vec m b)
+  type NetworkInput  (Rect cell n m a b) = (Vec n a, Vec m b)
+  type NetworkOutput (Rect cell n m a b) = (Vec n a, Vec m b)
 
   systolicNetwork Rect{..} inputs =
     bundleRect $ delayOutputs delayOut

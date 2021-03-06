@@ -1,10 +1,10 @@
-module Main where
+module Main (main) where
 
 import Prelude
 
 import Build_doctests     (flags, pkgs, module_sources)
 import System.Environment (lookupEnv)
-import System.Process
+import System.Process     (readProcess)
 import Test.DocTest       (doctest)
 
 
@@ -19,5 +19,6 @@ main = do
       Nothing -> pure []
       Just _ -> pure . ("-package-db=" <>) <$> getGlobalPackageDb
 
-  doctest (flags <> extraFlags <> pkgs <> module_sources)
+  let args = flags <> extraFlags <> pkgs <> module_sources
+  doctest args
 

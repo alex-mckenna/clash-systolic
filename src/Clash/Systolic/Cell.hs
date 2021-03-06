@@ -80,7 +80,7 @@ class SystolicCell cell where
 --
 instance (SystolicCell cell) => SystolicCell (a -> cell) where
   type CellInput  (a -> cell) = (a, CellInput cell)
-  type CellOutput (_ -> cell) = CellOutput cell
+  type CellOutput (a -> cell) = CellOutput cell
 
   systolicCell genCell genInput =
     let cell  = fmap (genCell . fst) genInput

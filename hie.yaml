@@ -4,7 +4,7 @@ cradle:
       component: "lib:clash-systolic"
 
     - path: "tests"
-      component: "clash-systolic:test:doctest"
+      component: "clash-systolic:test:doctests"
 
     - path: "tests"
       component: "clash-systolic:test:test-library"
