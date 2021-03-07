@@ -23,6 +23,17 @@ systolic cell or network is configured, it is simply a function from a signal
 of input to a signal of output. This makes it easy to integrate with existing
 clash designs, as there is no separate API to learn.
 
+- [Overview](#overview)
+  * [Systolic Cells](#systolic-cells)
+  * [Systolic Networks](#systolic-networks)
+- [Example - Ripple Carry Adder](#example---ripple-carry-adder)
+  * [Setup](#setup)
+  * [Adder Cell](#adder-cell)
+  * [Ripple Adder Network](#ripple-adder-network)
+  * [Simulating in `clashi`](#simulating-in-clashi)
+- [Frequently Asked Questions](#frequently-asked-questions)
+- [License](#license)
+
 # Overview
 ## Systolic Cells
 
@@ -34,7 +45,7 @@ network.
 Systolic networks describe the interconnection of processing elements.
 
 # Example - Ripple Carry Adder
-
+## Setup
 A ripple carry adder is a simple adder circuit constructed by chaining together
 adders, propagating the carry from one adder to the next. Using `clash-systolic`
 we can implement this as a systolic network where
@@ -55,6 +66,8 @@ only preamble needed is
 import Clash.Prelude
 import Clash.Systolic
 ```
+
+## Adder Cell
 
 The first thing to be defined is the type of cells, containing the static
 configuration for the adder. For this example, the only configuration is the
@@ -84,6 +97,8 @@ instance SystolicCell (Adder n) where
        in (z, unpack c)
 ```
 
+## Ripple Adder Network
+
 With the behaviour of an individual cell specified, a network can now be
 defined which instantiates and connects the cells together. This is configured
 by the number of stages and the width of each cell's input. The constraints
@@ -102,8 +117,8 @@ data RippleAdder stages width where
     -> RippleAdder stages width
 ```
 
-The implementation of `SystolicNetwork` for `RippleAdder` is where most of the
-complexity is introduced. Here we have to
+The `SystolicNetwork` instance for `RippleAdder` contains most of the
+complexity in the implementation, as it has to
 
   * split each input `BitVector` into the input for each cell
   * delay each input `BitVector` so input and carry meet cells in sync
@@ -177,6 +192,138 @@ instance SystolicNetwork (RippleAdder stages width) where
     delayInputs     = reverse . delaySignals . reverse
     delayOutputs    = delaySignals
 ```
+
+## Simulating in `clashi`
+
+From `clashi` we can test that the ripple adder network performs as expected:
+
+```
+> import Data.List as List
+> let xs = [62, 75, 54, 86, 54, 76, 36, 67] :: [BitVector 8]
+> let ys = [2, 4, 8, 16, 32, 64, 128, 255] :: [BitVector 8]
+> let cs = [0, 0, 0, 0, 0, 0, 0, 0] :: [Bit]
+> let netIn = List.zip3 xs ys cs
+> let net2x4 = systolicNetwork @_ @System (PipelinedAdder @2 @4 SNat)
+> showX (simulateN 10 net2x4 netIn)
+"[(...._....,X),(...._....,.),(0100_0000,0),(0100_1111,0),(0011_1110,0),(0110_0110,0),(0101_0110,0),(1000_1100,0),(1010_0100,0),(0100_0010,1)]"
+```
+
+If the number of stages and width of each stage are changed, the latency of the
+network changes accordingly:
+
+```
+> let net1x8 = systolicNetwork @_ @System (PipelinedAdder @1 @8 SNat)
+> let net4x2 = systolicNetwork @_ @System (PipelinedAdder @4 @2 SNat)
+> showX (simulateN 9 net1x8 netIn)
+"[(...._....,X),(...._....,.),(0100_0000,0),(0100_1111,0),(0011_1110,0),(0110_0110,0),(0101_0110,0),(1000_1100,0),(1010_0100,0),(0100_0010,1)]"
+> showX (simulateN 12 net4x2 netIn)
+"[(...._....,X),(...._....,.),(0100_0000,0),(0100_1111,0),(0011_1110,0),(0110_0110,0),(0101_0110,0),(1000_1100,0),(1010_0100,0),(0100_0010,1)]"
+```
+
+# Frequently Asked Questions
+
+<dl>
+  <dt>Why is cell / network X not defined in the library?</dt>
+  <dd>
+
+As `clash-systolic` aims to be as lightweight as possible, the only
+definitions given out of the box are things deemed to be widely applicable.
+The means cells / networks which are specific to a particular problem or
+problem domain are likely to be excluded. In the future, separate libraries
+may be created for these if there is demand.
+
+Pull requests are accepted for new cells / networks if they are generic
+enough for inclusion in the library.
+
+  </dd>
+
+  <dt>How can I define a network with multiple types of cell?</dt>
+  <dd>
+
+There are two recommended ways to define a network with multiple types of cell,
+depending on whether the cells have the same input and output types or not. For
+the simple case, the cell configuration can simple have a constructor for each
+variant of cell, i.e.
+
+```haskell
+data MyCell = DoA | DoB
+```
+
+For the more advanced case of cells which have different inputs / outputs,
+`-XGADTs` can be used to describe the different variants of cell. For example:
+
+```haskell
+data CellType = A | B
+
+data MyCell :: CellType -> Type where
+  DoA :: MyCell 'A
+  DoB :: MyCell 'B
+```
+
+By using `-XFlexibleContexts` to define instances for `SystolicCell`, the
+different variants can have different `CellInput` and `CellOutput` types:
+
+```haskell
+instance SystolicCell (MyCell 'A) where
+  type CellInput  (MyCell 'A) = InputA
+  type CellOutput (MyCell 'A) = OutputA
+
+  systolicCell DoA = ...
+
+instance SystolicCell (MyCell 'B) where
+  type CellInput  (MyCell 'B) = InputB
+  type CellOutput (MyCell 'B) = OutputB
+
+  systolicCell DoB = ...
+```
+
+Networks can be defined to work over multiple types of cell by having a
+recursive configuration type and using type equality constraints to ensure that
+input and output types for cells line up. See the library module
+`Clash.Systolic.Network.Pipeline` for an example of this.
+
+  </dd>
+
+  <dt>How can I change the connections / flow of data in a network?</dt>
+  <dd>
+
+As connections are specified by implementations of the `SystolicNetwork` class,
+the best way to define variations of a network are to either
+
+  * specify choices as static configuration in the network type
+  * define related network types for different connection methods
+
+This is largely a matter of personal taste, although generally speaking for
+variations of a network that are sufficiently different it is better to define
+a separate network type to keep the implementation of `systolicNetwork` easily
+understandable. The `-XGADTs` trick from the preceding answer can also be used
+to solve this problem.
+
+  </dd>
+
+  <dt>How can I use hidden state within a cell / network?</dt>
+  <dd>
+
+Hidden state can be used in a cell by defining cells using the `mealy` or
+`moore` functions from [clash-prelude](https://hackage.haskell.org/package/clash-prelude).
+Hidden state in a network can be achieved by having an input and output from
+cells containing the shared internal state. The connections for the network
+must connect these signals together such that no input or output is part of
+the `NetworkInput` or `NetworkOutput` for the network. The behaviour of the
+cell type must specify when to preserve or propagate state amongst cells.
+
+  </dd>
+
+  <dt>How can I define networks with irregular delays?</dt>
+  <dd>
+
+Systolic networks should have a regular delay between cells. If you are
+trying to implement something where this is undesirable, this is likely not
+the library you want. You may have more luck with the
+[clash-protocols](https://github.com/clash-lang/clash-protocols) library.
+
+  </dd>
+</dl>
 
 # License
 
