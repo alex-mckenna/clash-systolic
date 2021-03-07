@@ -1,14 +1,22 @@
 {-# LANGUAGE UndecidableInstances #-}
 
+-- |
+-- Module       : Clash.Systolic.Network.Pipeline
+-- Description  : Unidirectional systolic piplines
+-- Copyright    : (C) 2021 Alex McKenna
+-- License      : BSD-2-Clause
+-- Maintainer   : alexmckenna@qaylogic.com
+-- Stability    : Experimental
+--
 module Clash.Systolic.Network.Pipeline
   ( Pipeline(..)
   ) where
 
 import Clash.Prelude
+import Data.Kind
 
 import Clash.Systolic.Cell
 import Clash.Systolic.Network
-import Data.Kind
 
 
 type family Head xs where

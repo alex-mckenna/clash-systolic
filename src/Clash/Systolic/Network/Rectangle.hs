@@ -1,5 +1,13 @@
 {-# LANGUAGE RecordWildCards #-}
 
+-- |
+-- Module       : Clash.Systolic.Network.Rectangle
+-- Description  : Unidirectional 2D systolic arrays
+-- Copyright    : (C) 2021 Alex McKenna
+-- License      : BSD-2-Clause
+-- Maintainer   : alexmckenna@qaylogic.com
+-- Stability    : Experimental
+--
 module Clash.Systolic.Network.Rectangle
   ( Rect(..)
   , Delay(..)
