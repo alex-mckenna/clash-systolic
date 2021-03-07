@@ -4,7 +4,7 @@ name: clash-systolic
 version: 0.1.0
 license: BSD-3-Clause
 author: Alex McKenna <alex@qbaylogic.com>
-maintainer: Alex McKenna <alex@qbaylogic.com>
+maintainer: alex@qbaylogic.com
 build-type: Custom
 
 common common-options
@@ -24,6 +24,7 @@ common common-options
     GADTs
     LambdaCase
     NoImplicitPrelude
+    NumericUnderscores
     ScopedTypeVariables
     StandaloneDeriving
     TypeApplications
@@ -44,8 +45,8 @@ common common-options
 
     -- Plugins to support type-level constraint solving on naturals
     -fplugin=GHC.TypeLits.Extra.Solver
-    -fplugin=GHC.TypeLits.Normalise
     -fplugin=GHC.TypeLits.KnownNat.Solver
+    -fplugin=GHC.TypeLits.Normalise
 
     -- Clash needs access to the source code in compiled modules
     -fexpose-all-unfoldings
@@ -103,8 +104,8 @@ test-suite doctests
 
   x-doctest-options:
     -fplugin=GHC.TypeLits.Extra.Solver
-    -fplugin=GHC.TypeLits.Normalise
     -fplugin=GHC.TypeLits.KnownNat.Solver
+    -fplugin=GHC.TypeLits.Normalise
 
   build-depends:
     doctest,
