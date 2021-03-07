@@ -86,6 +86,7 @@ library
     Clash.Systolic.Network
     Clash.Systolic.Network.Pipeline
     Clash.Systolic.Network.Rectangle
+    Clash.Systolic.Network.Tree
 
   build-depends:
     profunctors,
