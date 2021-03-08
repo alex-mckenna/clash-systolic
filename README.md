@@ -38,11 +38,34 @@ clash designs, as there is no separate API to learn.
 ## Systolic Cells
 
 Systolic cells describe the behaviour of an individual processing element in a
-network.
+network. These provide the basic functionality for a network and should be
+designed in such a way that each cell acts as a black box - consuming some
+input and producing some output every cycle.
+
+> :warning: **Warning: Using registers in cells**
+>
+> Cells are intended to only specify behaviour, as cells are not expected to
+> know if their input / output is an external signal to / from a network. This
+> means that cells should *not* delay their input or output signals, as this
+> can lead to incorrect behaviour when cells are connected to form a network.
+
+The type of a cell should contain all the information needed to implement the
+`SystolicCell` class. This means user defined cell types should allow the
+inputs and outputs of the cell to be determined, as well as any static
+configuration for the cell.
 
 ## Systolic Networks
 
-Systolic networks describe the interconnection of processing elements.
+Systolic networks describe the interconnection of processing elements. These
+provide templates for how to instantiate and connect individual cells to build
+the desired circuit. Similarly to cells, networks are also black boxes which
+consume some input and produce some output each cycle. Note that for many types
+of network, there will be a latency before the first output is produced.
+
+The type of a network should contain all the information needed to implement
+the `SystolicNetwork` class. This means user defined network types should allow
+the inputs and outputs of a network to be determined, as well as any static
+configuration for the network.
 
 # Example - Ripple Carry Adder
 ## Setup
