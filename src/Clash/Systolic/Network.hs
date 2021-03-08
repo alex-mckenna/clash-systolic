@@ -2,7 +2,7 @@
 -- Module       : Clash.Systolic.Network
 -- Description  : Systolic network API
 -- Copyright    : (C) 2021 Alex McKenna
--- License      : BSD-3-Clause
+-- License      : BSD-2-Clause
 -- Maintainer   : alex@qbaylogic.com
 -- Stability    : Experimental
 --

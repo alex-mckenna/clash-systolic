@@ -4,7 +4,7 @@
 -- Module       : Clash.Systolic.Cell
 -- Description  : Systolic Cell API
 -- Copyright    : (C) 2021 Alex McKenna
--- License      : BSD-3-Clause
+-- License      : BSD-2-Clause
 -- Maintainer   : alexmckenna@qaylogic.com
 -- Stability    : Experimental
 --
