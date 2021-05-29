@@ -2,6 +2,7 @@ packages:
   clash-systolic.cabal
 
 package clash-prelude
+  documentation: True
   flags: -large-tuples
 
 package clash-systolic

@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        cabal: ["3.2.0.0", "3.4.0.0"]
+        cabal: ["3.4.0.0"]
         ghc:   ["8.8", "8.10"]
 
     name: GHC ${{ matrix.ghc }}, Cabal ${{ matrix.cabal }}

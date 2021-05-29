@@ -15,7 +15,6 @@ module Clash.Systolic.Network.Rectangle
 
 import Clash.Prelude
 import Data.Bifunctor
-import Data.Kind
 
 import Clash.Systolic.Cell
 import Clash.Systolic.Network
