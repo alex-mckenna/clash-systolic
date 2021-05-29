@@ -13,7 +13,6 @@ module Clash.Systolic.Network.Pipeline
   ) where
 
 import Clash.Prelude
-import Data.Kind
 
 import Clash.Systolic.Cell
 import Clash.Systolic.Network
