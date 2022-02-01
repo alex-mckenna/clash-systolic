@@ -1,5 +1,2 @@
-import Distribution.Extra.Doctest (defaultMainWithDoctests)
-
-main :: IO ()
-main = defaultMainWithDoctests "doctests"
-
+import Distribution.Simple
+main = defaultMain

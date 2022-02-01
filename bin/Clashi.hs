@@ -1,3 +1,5 @@
+import Prelude
+
 import System.Environment (getArgs)
 import Clash.Main (defaultMain)
 
