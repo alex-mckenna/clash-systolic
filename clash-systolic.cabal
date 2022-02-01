@@ -5,7 +5,7 @@ version: 0.1.0
 license: BSD-3-Clause
 author: Alex McKenna <alex@qbaylogic.com>
 maintainer: alex@qbaylogic.com
-build-type: Custom
+build-type: Simple
 
 common common-options
   default-language: Haskell2010
@@ -30,10 +30,6 @@ common common-options
     TypeApplications
     TypeFamilyDependencies
     TypeOperators
-
-  if impl(ghc >= 8.6)
-    default-extensions:
-      NoStarIsType
 
   ghc-options:
     -Wall
@@ -65,17 +61,16 @@ common common-options
       -Wmissing-export-lists
       -Wpartial-fields
 
-  build-depends:
-    base,
-    clash-prelude >= 1.2 && <2,
-    ghc-typelits-extra,
-    ghc-typelits-knownnat,
-    ghc-typelits-natnormalise,
+  if impl(ghc >= 8.6)
+    default-extensions:
+      NoStarIsType
 
-custom-setup
-  setup-depends:
-    base,
-    cabal-doctest,
+  build-depends:
+    base                        >= 4.13  && < 5,
+    clash-prelude               >= 1.2   && < 1.8,
+    ghc-typelits-extra          >= 0.4.3 && < 0.5,
+    ghc-typelits-knownnat       >= 0.7.6 && < 0.8,
+    ghc-typelits-natnormalise   >= 0.7.6 && < 0.8,
 
 library
   import: common-options
@@ -87,9 +82,6 @@ library
     Clash.Systolic.Network
     Clash.Systolic.Network.Pipeline
     Clash.Systolic.Network.Rectangle
-
-  build-depends:
-    profunctors,
 
 test-suite doctests
   import: common-options
@@ -108,8 +100,8 @@ test-suite doctests
     -fplugin=GHC.TypeLits.Normalise
 
   build-depends:
-    doctest,
-    process,
+    doctest-parallel >= 0.2 && < 0.3,
+    filepath,
 
     clash-systolic,
 
@@ -132,8 +124,8 @@ executable clash
   main-is: bin/Clash.hs
 
   build-Depends:
-    base,
-    clash-ghc,
+    base      >= 4.13 && < 5,
+    clash-ghc >= 1.2  && < 1.8,
 
     clash-systolic,
 
@@ -145,8 +137,8 @@ executable clashi
     ghc-options: -dynamic
 
   build-depends:
-    base,
-    clash-ghc,
+    base      >= 4.13 && < 5,
+    clash-ghc >= 1.2  && < 1.8,
 
     clash-systolic,
 
