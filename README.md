@@ -16,7 +16,7 @@ in a systolic manner including
   * systolic arrays
   * systolic trees
   * systolic lattices
-  * systolic neutral networks
+  * systolic neural networks
 
 The API for `clash-systolic` aims to be as lightweight as possible. Once a
 systolic cell or network is configured, it is simply a function from a signal
